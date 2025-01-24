@@ -1,0 +1,5 @@
+templates/
+imdb_top250.csv
+imdb_top250_sample.csv
+__pycache__/
+*.ipynb

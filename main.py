@@ -7,10 +7,6 @@ from sqlalchemy.orm import Session
 # Initialize FastAPI app
 app = FastAPI()
 
-# Example data storage
-items = []
-
-
 # Dependency to get a database session
 def get_db():
     db = SessionLocal()
@@ -21,7 +17,7 @@ def get_db():
 
 @app.get("/")
 def greetings():
-    return {"message": "Welcome to my FastAPI demo app!"}
+    return {"message": "Welcome to my movie api demo app!"}
 
 # get all movies
 @app.get("/movies/")
@@ -60,21 +56,42 @@ def add_movies(movies: List[movie_scheme], db: Session = Depends(get_db)):
     
     return db_movies
 
-# # update item
-# @app.put("/items/{item_id}", response_model=Item)
-# def update_item(item_id: int, updated_item: Item):
-#     for i, item in enumerate(items):
-#         if item.id == item_id:
-#             items[i] = updated_item
-#             return updated_item
-#     raise HTTPException(status_code=404, detail="Item not found")
+# update item
+@app.put("/movies/{movie_id}", response_model = movie_scheme)
+def update_movie(new_data: movie_scheme, movie_id: int, db: Session = Depends(get_db)):
+    movie_to_updt = db.query(Movie).where(Movie.id == movie_id).first()
+    
+    if not movie_to_updt:
+        raise HTTPException(status_code=404, detail="Item not found")
+    else:
+        movie_to_updt.imdb_rating = new_data.imdb_rating
+        movie_to_updt.title = new_data.title
+        movie_to_updt.year = new_data.year
+        movie_to_updt.rated = new_data.rated
+        movie_to_updt.runtime = new_data.runtime
+        movie_to_updt.genre = new_data.genre
+        movie_to_updt.director = new_data.director
+        movie_to_updt.actors = new_data.actors
+        movie_to_updt.production = new_data.production
 
-# delete item
-@app.delete("/items/{item_id}")
-def delete_item(item_id: int):
-    global items
-    items = [item for item in items if item.id != item_id]
-    return {"message": "Item deleted successfully"}
+        db.add(movie_to_updt)
+        db.commit()
+        db.refresh(movie_to_updt)
+   
+    return movie_to_updt
+
+# delete movie
+@app.delete("/movies/{movie_id}", response_model = movie_scheme)
+def delete_movie(movie_id: int, db: Session = Depends(get_db)):
+    movie_to_delete = db.query(Movie).where(Movie.id == movie_id).first()
+    
+    if not movie_to_delete:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    
+    db.delete(movie_to_delete)
+    db.commit()
+    
+    return movie_to_delete
 
 if __name__ == "__main__":
     import uvicorn

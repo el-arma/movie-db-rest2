@@ -17,7 +17,7 @@ def get_db():
 
 @app.get("/")
 def greetings():
-    return {"message": "Welcome to my movie api demo app!"}
+    return {"message": "Welcome to my movie api demo app! 🎞️ "}
 
 # get all movies
 @app.get("/movies/")

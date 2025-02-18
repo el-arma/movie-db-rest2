@@ -3,6 +3,7 @@ from schemas import movie_scheme
 from typing import List
 from database import SessionLocal, Movie
 from sqlalchemy.orm import Session
+import uvicorn
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -94,5 +95,4 @@ def delete_movie(movie_id: int, db: Session = Depends(get_db)):
     return movie_to_delete
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run("main:app", host = "127.0.0.1", port = 8000, reload = True)
